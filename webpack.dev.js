@@ -2,6 +2,9 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebPackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     entry: './src/client/index.js',
@@ -11,6 +14,9 @@ module.exports = {
         libraryTarget: 'var',
         library: 'Client'
     },
+    optimization: {
+        minimizer: [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})],
+        },
     mode: 'development',
     devtool: 'source-map',
     module: {
@@ -22,8 +28,8 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                use: [ 'style-loader', 'css-loader', 'sass-loader' ]
-            }
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader' ]
+            },
         ]
     },
     plugins: [
@@ -39,6 +45,7 @@ module.exports = {
             // Automatically remove all unused webpack assets on rebuild
             cleanStaleWebpackAssets: true,
             protectWebpackAssets: false
-        })
+        }),
+        new MiniCssExtractPlugin({ filename: "[name].css" })
     ]
 }
